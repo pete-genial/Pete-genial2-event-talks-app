@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Talks Schedule</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #1a73e8;
+            margin: 0;
+        }
+
+        .search-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        #searchInput {
+            width: 50%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+        }
+
+        .schedule-container {
+            display: grid;
+            gap: 20px;
+        }
+
+        .talk-card {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-left: 5px solid #1a73e8;
+            padding: 20px;
+            border-radius: 8px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .talk-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .talk-time {
+            font-weight: bold;
+            color: #1a73e8;
+            margin-bottom: 10px;
+        }
+
+        .talk-title {
+            font-size: 1.25em;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+        }
+
+        .talk-speakers {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .talk-description {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .talk-category {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .category-tag {
+            background-color: #e0e0e0;
+            color: #555;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+        }
+
+        .break-card {
+            background-color: #fff3e0;
+            border-left: 5px solid #ff9800;
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Tech Talks Schedule</h1>
+            <p>A one-day event filled with insightful technical talks.</p>
+        </header>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search by category...">
+        </div>
+        <div id="schedule" class="schedule-container">
+            <!-- Schedule will be dynamically generated here -->
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const scheduleContainer = document.getElementById('schedule');
+            const searchInput = document.getElementById('searchInput');
+            const talks = [
+              {
+                "title": "The Future of Artificial Intelligence",
+                "speakers": ["John Doe"],
+                "category": ["AI", "Machine Learning"],
+                "duration": "1 hour",
+                "description": "A deep dive into the future of AI and its impact on society."
+              },
+              {
+                "title": "Building Scalable Web Applications",
+                "speakers": ["Jane Smith", "Peter Jones"],
+                "category": ["Web Development", "Scalability"],
+                "duration": "1 hour",
+                "description": "Learn how to build web applications that can handle millions of users."
+              },
+              {
+                "title": "The Rise of Quantum Computing",
+                "speakers": ["Alice Johnson"],
+                "category": ["Quantum Computing", "Future Tech"],
+                "duration": "1 hour",
+                "description": "An introduction to the mind-bending world of quantum computing."
+              },
+              {
+                "title": "Cybersecurity in the Modern Age",
+                "speakers": ["Bob Williams"],
+                "category": ["Cybersecurity"],
+                "duration": "1 hour",
+                "description": "Protecting yourself and your organization from modern cyber threats."
+              },
+              {
+                "title": "The Power of Big Data",
+                "speakers": ["Charlie Brown", "Lucy van Pelt"],
+                "category": ["Big Data", "Analytics"],
+                "duration": "1 hour",
+                "description": "Harnessing the power of big data to make better decisions."
+              },
+              {
+                "title": "Introduction to Blockchain",
+                "speakers": ["Satoshi Nakamoto"],
+                "category": ["Blockchain", "Cryptocurrency"],
+                "duration": "1 hour",
+                "description": "A beginner's guide to blockchain technology and its applications."
+              }
+            ];
+
+            renderSchedule(talks);
+
+            // Search functionality
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const filteredTalks = talks.filter(talk => 
+                    talk.category.some(cat => cat.toLowerCase().includes(searchTerm))
+                );
+                renderSchedule(filteredTalks);
+            });
+
+            function renderSchedule(talksToRender) {
+                scheduleContainer.innerHTML = ''; // Clear existing schedule
+                const schedule = generateSchedule(talksToRender);
+
+                schedule.forEach(item => {
+                    const card = document.createElement('div');
+                    if (item.type === 'talk') {
+                        card.className = 'talk-card';
+                        card.innerHTML = `
+                            <div class="talk-time">${item.startTime} - ${item.endTime}</div>
+                            <h2 class="talk-title">${item.title}</h2>
+                            <div class="talk-speakers">By: ${item.speakers.join(', ')}</div>
+                            <p class="talk-description">${item.description}</p>
+                            <div class="talk-category">
+                                ${item.category.map(cat => `<span class="category-tag">${cat}</span>`).join('')}
+                            </div>
+                        `;
+                    } else if (item.type === 'break') {
+                        card.className = 'break-card';
+                        card.innerHTML = `
+                            <div class="talk-time">${item.startTime} - ${item.endTime}</div>
+                            <div>${item.title}</div>
+                        `;
+                    } else { // Transition
+                        card.className = 'transition-card';
+                        card.innerHTML = `
+                            <div class="transition-time">${item.startTime} - ${item.endTime}</div>
+                            <div>${item.title}</div>
+                        `;
+                    }
+                    scheduleContainer.appendChild(card);
+                });
+            }
+
+            function generateSchedule(talksData) {
+                const schedule = [];
+                let currentTime = new Date();
+                currentTime.setHours(10, 0, 0, 0); // Event starts at 10:00 AM
+
+                const addMinutes = (date, minutes) => {
+                    return new Date(date.getTime() + minutes * 60000);
+                };
+
+                const formatTime = (date) => {
+                    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+                };
+
+                talksData.forEach((talk, index) => {
+                    const startTime = new Date(currentTime);
+                    const endTime = addMinutes(startTime, 60);
+                    
+                    schedule.push({
+                        type: 'talk',
+                        startTime: formatTime(startTime),
+                        endTime: formatTime(endTime),
+                        ...talk
+                    });
+
+                    currentTime = endTime;
+
+                    // Add lunch break after the 3rd talk
+                    if (index === 2) {
+                        const breakStartTime = new Date(currentTime);
+                        const breakEndTime = addMinutes(breakStartTime, 60);
+                        schedule.push({
+                            type: 'break',
+                            title: 'Lunch Break',
+                            startTime: formatTime(breakStartTime),
+                            endTime: formatTime(breakEndTime)
+                        });
+                        currentTime = breakEndTime;
+                    } else if (index < talksData.length - 1) { // Add transition between other talks
+                        const transitionStartTime = new Date(currentTime);
+                        const transitionEndTime = addMinutes(transitionStartTime, 10);
+                        schedule.push({
+                            type: 'transition',
+                            title: 'Transition',
+                            startTime: formatTime(transitionStartTime),
+                            endTime: formatTime(transitionEndTime)
+                        });
+                        currentTime = transitionEndTime;
+                    }
+                });
+
+                return schedule;
+            }
+        });
+    </script>
+</body>
+</html>
